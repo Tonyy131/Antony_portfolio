@@ -265,23 +265,35 @@ const PROJECTS: {
     category: "Backend",
     featured: false,
     summary:
-      "A production-style backend built around service boundaries, caching, and containerized deployment for a food delivery domain.",
+      "A production-style microservices backend for a food delivery domain, built and led by a team of 14 engineers under Agile practices, with multi-database architecture and full container orchestration.",
     impact: [
-      "Service separation for orders, payments, inventory, and delivery",
-      "Redis caching for hot-path performance",
-      "PostgreSQL schemas designed around domain boundaries",
-      "Dockerized deployment for local and team workflows",
+      "Served as Scrum Master leading a team of 14 software engineers across sprints and delivery cycles",
+      "Designed service boundaries for orders, payments, inventory, delivery tracking, and notifications",
+      "Multi-database architecture: PostgreSQL, MongoDB, Redis, Elasticsearch, Neo4j, and Cassandra — each chosen per service requirements",
+      "Kubernetes orchestration for service deployment, scaling, and health management",
+      "Redis caching for hot-path performance, Elasticsearch for search, Neo4j for graph-based recommendations",
     ],
-    stack: ["Spring Boot", "PostgreSQL", "Redis", "Docker", "REST APIs"],
+    stack: [
+      "Spring Boot",
+      "PostgreSQL",
+      "MongoDB",
+      "Redis",
+      "Elasticsearch",
+      "Neo4j",
+      "Cassandra",
+      "Docker",
+      "Kubernetes",
+      "REST APIs",
+    ],
     link: "https://github.com/Tonyy131/17_Dockestra_FoodDelivery.git",
     accent: "from-blue-500/20 to-indigo-500/20",
     panel: {
       type: "stats",
       items: [
-        { label: "Services", value: "4 domains" },
-        { label: "Cache layer", value: "Redis" },
-        { label: "Database", value: "PostgreSQL" },
-        { label: "Deploy", value: "Docker" },
+        { label: "Team size", value: "14 engineers" },
+        { label: "Role", value: "Scrum Master" },
+        { label: "Databases", value: "6 systems" },
+        { label: "Orchestration", value: "Kubernetes" },
       ],
     },
   },
@@ -349,12 +361,12 @@ function ProjectRightPanel({
         className={`relative min-h-[280px] overflow-hidden border-t border-[var(--border)] bg-gradient-to-br ${accent} lg:border-l lg:border-t-0`}
       >
         {/* Heavy dark overlay so white-background diagrams blend into the dark theme */}
-        <div className="absolute inset-0 z-10 bg-[rgba(8,12,20,0.68)]" />
+        <div className="absolute inset-0 z-10 bg-[rgba(8,12,20,0.10)]" />
         <Image
           src={panel.src}
           alt={panel.alt}
           fill
-          className="object-contain object-center p-6 opacity-75 mix-blend-luminosity"
+          className="object-contain object-center p-6"
           sizes="(max-width: 1024px) 100vw, 40vw"
         />
         {/* Caption bar pinned to bottom */}
