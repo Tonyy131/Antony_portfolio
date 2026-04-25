@@ -364,7 +364,7 @@ function ProjectRightPanel({
           src={panel.src}
           alt={panel.alt}
           fill
-          className="object-cover object-center"
+          className="object-contain object-center"
           sizes="(max-width: 1024px) 100vw, 40vw"
         />
         {/* Subtle fade at the edges to blend with the card border */}
