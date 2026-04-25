@@ -4,19 +4,22 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   BriefcaseBusiness,
+  Code2,
+  Database,
   ExternalLink,
   Github,
+  GraduationCap,
+  Languages,
   Mail,
   MapPin,
   MessageSquare,
-  GraduationCap,
-  Languages,
+  ShieldCheck,
   Sparkles,
-  Code2,
-  Database,
   BrainCircuit,
   Server,
-  ShieldCheck,
+  Workflow,
+  FileText,
+  Layers3,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -28,33 +31,17 @@ const NAV_ITEMS = [
 ] as const;
 
 const TRUST_POINTS = [
-  "Data Engineering · AI Engineering · Backend Systems",
   "Published paper at EDTconf 2025",
-  "Bachelor thesis with professors at Universität Stuttgart",
-  "Arabic and English fluent · German basic",
+  "Bachelor thesis completed with professors at Universität Stuttgart",
+  "Arabic and English fluent",
+  "German basic",
 ];
 
-const HIGHLIGHTS = [
-  {
-    value: "1",
-    label: "Published paper",
-    detail: "EDTconf 2025",
-  },
-  {
-    value: "3+",
-    label: "Core focus areas",
-    detail: "Data, AI, Backend",
-  },
-  {
-    value: "5+",
-    label: "Major projects",
-    detail: "Portfolio-worthy work",
-  },
-  {
-    value: "2",
-    label: "Fluent languages",
-    detail: "Arabic and English",
-  },
+const STATS = [
+  { value: "1", label: "Published paper", detail: "EDTconf 2025" },
+  { value: "5+", label: "Major projects", detail: "Portfolio-ready work" },
+  { value: "3", label: "Core tracks", detail: "Data, AI, Backend" },
+  { value: "2", label: "Fluent languages", detail: "Arabic, English" },
 ];
 
 const SKILL_GROUPS = [
@@ -186,6 +173,7 @@ const PROJECTS = [
     ],
     link: "https://github.com/sp4rkii/Real-Time-Stock-Portfolio-Analytics-Platform.git",
     accent: "from-cyan-500/20 to-blue-500/20",
+    note: "Best place for a framed architecture diagram or dashboard screenshot.",
   },
   {
     title: "Intelligent Hotel Analytics & Graph-RAG System",
@@ -210,6 +198,7 @@ const PROJECTS = [
     ],
     link: "https://github.com/Tonyy131/International_Hotel_Booking_Customer_Assistant--Team_49.git",
     accent: "from-violet-500/20 to-fuchsia-500/20",
+    note: "Best place for the Graph-RAG architecture image you shared.",
   },
   {
     title: "AAS Digital Twin — Container Execution Engine",
@@ -221,7 +210,7 @@ const PROJECTS = [
       "Implemented XML-driven execution rules inside the AAS workflow",
       "Integrated BaSyx-based model handling with container lifecycle management",
       "Published at EDTconf 2025 as a single paper",
-      "Completed as bachelor thesis collaboration with professors at Universität Stuttgart",
+      "Completed as bachelor thesis with professors at Universität Stuttgart",
     ],
     stack: [
       "Java",
@@ -233,6 +222,7 @@ const PROJECTS = [
     ],
     link: "https://doi.org/10.48550/arXiv.2512.15452",
     accent: "from-emerald-500/20 to-cyan-500/20",
+    note: "Use the publication card instead of an image.",
   },
   {
     title: "Food Delivery Microservices Platform",
@@ -245,11 +235,11 @@ const PROJECTS = [
       "Redis caching for hot-path performance",
       "PostgreSQL schemas designed around domain boundaries",
       "Dockerized deployment for local and team workflows",
-      "Kubernetes orchestration with Docker Compose for development",
     ],
     stack: ["Spring Boot", "PostgreSQL", "Redis", "Docker", "REST APIs"],
     link: "https://github.com/Tonyy131/17_Dockestra_FoodDelivery.git",
     accent: "from-blue-500/20 to-indigo-500/20",
+    note: "Can use a simple architecture schematic if you add one later.",
   },
   {
     title: "Comprehensive Tourism Management Platform",
@@ -258,14 +248,14 @@ const PROJECTS = [
     summary:
       "A large-team full-stack project that covered multi-role access, dashboards, bookings, and project leadership responsibilities.",
     impact: [
-      "A scrum master role for a team of 10 with sprint planning, retrospectives, and team coordination",
-      "Built for tourists, sellers, guides, admins, and advertisers",
+      "Served tourists, sellers, guides, admins, and advertisers",
       "Led team coordination in an Agile workflow",
       "Ranked #1 in course evaluation",
     ],
     stack: ["MongoDB", "Express.js", "React", "Node.js", "Agile / Scrum"],
     link: "https://github.com/Advanced-computer-lab-2024/Wander-Mate.git",
     accent: "from-amber-500/20 to-orange-500/20",
+    note: "Good candidate for a compact summary card.",
   },
 ];
 
@@ -359,7 +349,7 @@ export default function Home() {
         <div className="hero-grid-bg absolute inset-0 opacity-70" />
         <div className="absolute left-1/2 top-[-180px] h-[560px] w-[760px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.16)_0%,transparent_70%)] blur-2xl" />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <motion.div initial="hidden" animate="show" variants={stagger}>
             <motion.div
               variants={fadeUp}
@@ -371,7 +361,7 @@ export default function Home() {
 
             <motion.h1
               variants={fadeUp}
-              className="max-w-4xl font-[var(--font-syne)] text-5xl font-extrabold tracking-[-0.05em] text-[var(--text)] md:text-6xl lg:text-7xl"
+              className="max-w-3xl font-[var(--font-syne)] text-5xl font-extrabold tracking-[-0.06em] text-[var(--text)] md:text-6xl lg:text-7xl lg:leading-[0.95]"
             >
               I build scalable backend systems, data platforms, and applied AI
               products.
@@ -456,7 +446,7 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                {HIGHLIGHTS.map((item) => (
+                {STATS.map((item) => (
                   <div
                     key={item.label}
                     className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4"
@@ -651,7 +641,7 @@ export default function Home() {
                 key={project.title}
                 whileHover={{ y: -3 }}
                 transition={{ duration: 0.2 }}
-                className={`rounded-3xl border border-[var(--border)] bg-[var(--bg2)] shadow-[0_18px_60px_rgba(0,0,0,0.18)]`}
+                className="rounded-3xl border border-[var(--border)] bg-[var(--bg2)] shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
               >
                 <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
                   <div className="p-6 md:p-8">
@@ -728,8 +718,7 @@ export default function Home() {
                           Suggested portfolio note
                         </div>
                         <div className="mt-2 text-sm leading-7 text-[var(--text2)]">
-                          Keep this project as a short case study with
-                          screenshots, architecture, and one concrete result.
+                          {project.note}
                         </div>
                       </div>
                     </div>
@@ -815,11 +804,7 @@ export default function Home() {
                   value: "linkedin.com/in/tonyayman131",
                   href: "https://linkedin.com/in/tonyayman131",
                 },
-                {
-                  label: "Location",
-                  value: "Cairo, Egypt",
-                  href: "#home",
-                },
+                { label: "Location", value: "Cairo, Egypt", href: "#home" },
               ].map((item) => (
                 <a
                   key={item.label}

@@ -21,11 +21,11 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tony Ayman — Software Engineer",
+  title: "Antony Meckhael — Software Engineer",
   description:
     "Backend Engineer, Data Engineer & AI Builder. Building scalable systems, real-time data pipelines, and applied AI solutions. Based in Cairo, open globally.",
   openGraph: {
-    title: "Tony Ayman — Software Engineer",
+    title: "Antony Meckhael — Software Engineer",
     description:
       "Backend, Data, and AI Engineer. Published researcher. GPA 1.01 / Excellent. Open to opportunities.",
     type: "website",
