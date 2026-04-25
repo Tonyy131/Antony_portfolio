@@ -358,20 +358,20 @@ function ProjectRightPanel({
   if (panel.type === "image") {
     return (
       <div
-        className={`relative min-h-[280px] overflow-hidden border-t border-[var(--border)] bg-gradient-to-br ${accent} lg:border-l lg:border-t-0`}
+        className={`relative min-h-[340px] overflow-hidden border-t border-[var(--border)] bg-gradient-to-br ${accent} lg:border-l lg:border-t-0`}
       >
-        {/* Heavy dark overlay so white-background diagrams blend into the dark theme */}
-        <div className="absolute inset-0 z-10 bg-[rgba(8,12,20,0.10)]" />
         <Image
           src={panel.src}
           alt={panel.alt}
           fill
-          className="object-contain object-center p-6"
+          className="object-cover object-center"
           sizes="(max-width: 1024px) 100vw, 40vw"
         />
-        {/* Caption bar pinned to bottom */}
+        {/* Subtle fade at the edges to blend with the card border */}
+        <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(8,12,20,0.6)]" />
+        {/* Caption pinned to bottom */}
         <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
-          <div className="rounded-xl border border-[var(--border)] bg-[rgba(8,12,20,0.85)] p-3 backdrop-blur-md">
+          <div className="rounded-xl border border-[var(--border)] bg-[rgba(8,12,20,0.82)] p-3 backdrop-blur-md">
             <div className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text3)]">
               Architecture diagram
             </div>
