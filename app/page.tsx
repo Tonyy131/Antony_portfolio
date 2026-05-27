@@ -1,25 +1,30 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowRight,
+  BookOpen,
+  BrainCircuit,
   BriefcaseBusiness,
   Code2,
   Database,
+  Download,
   ExternalLink,
   Github,
+  GitBranch,
   GraduationCap,
   Languages,
   Mail,
   MapPin,
+  Maximize2,
   MessageSquare,
+  Network,
+  Server,
   ShieldCheck,
   Sparkles,
-  BrainCircuit,
-  Server,
-  BookOpen,
-  GitBranch,
+  X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -39,7 +44,7 @@ const TRUST_POINTS = [
 
 const STATS = [
   { value: "1", label: "Published paper", detail: "EDTconf 2025" },
-  { value: "5+", label: "Major projects", detail: "Portfolio-ready work" },
+  { value: "6+", label: "Major projects", detail: "Portfolio-ready work" },
   { value: "3", label: "Core tracks", detail: "Data, AI, Backend" },
   { value: "2", label: "Fluent languages", detail: "Arabic, English" },
 ];
@@ -83,15 +88,30 @@ const SKILL_GROUPS = [
     ],
   },
   {
+    title: "LLMOps / AI Systems",
+    icon: Network,
+    items: [
+      "LangGraph",
+      "Agentic AI",
+      "Evaluation Pipelines",
+      "Workflow Orchestration",
+      "Graph-RAG",
+      "Prompt Engineering",
+      "LLM Evaluation",
+    ],
+  },
+  {
     title: "Cloud / DevOps",
     icon: ShieldCheck,
     items: [
       "Docker",
+      "Kubernetes",
       "Git",
       "GitHub",
       "GitLab",
       "Docker Compose",
-      "Kubernetes",
+      "Prometheus",
+      "Grafana",
     ],
   },
   {
@@ -230,6 +250,41 @@ const PROJECTS: {
     },
   },
   {
+    title: "GenAI Evaluation & Agentic Workflow Platform",
+    category: "LLMOps / Agentic AI",
+    featured: true,
+    summary:
+      "An experimental GenAI platform focused on agentic workflow orchestration, hypothesis evaluation pipelines, automated LLM judging, and scalable reasoning systems using graph-based execution.",
+    impact: [
+      "LangGraph-based agentic orchestration with multi-step reasoning graphs and conditional branching",
+      "Graph-based workflow execution for structured, reproducible LLM reasoning pipelines",
+      "Automated evaluation pipelines with gold-label datasets and LLM-as-judge scoring",
+      "Trace generation and experiment tracking for reproducible GenAI benchmarks",
+      "Scalable LLM evaluation architecture supporting multi-model, multi-prompt comparison",
+    ],
+    stack: [
+      "Python",
+      "LangGraph",
+      "LLMs",
+      "Agentic AI",
+      "Prompt Engineering",
+      "Evaluation Pipelines",
+      "Workflow Orchestration",
+      "Graph-based Systems",
+    ],
+    link: "https://github.com/Tonyy131",
+    accent: "from-purple-500/20 to-pink-500/20",
+    panel: {
+      type: "stats",
+      items: [
+        { label: "Architecture", value: "LangGraph" },
+        { label: "Paradigm", value: "Agentic AI" },
+        { label: "Evaluation", value: "Pipeline-based" },
+        { label: "Category", value: "LLMOps" },
+      ],
+    },
+  },
+  {
     title: "AAS Digital Twin — Container Execution Engine",
     category: "Research",
     featured: true,
@@ -262,19 +317,24 @@ const PROJECTS: {
   },
   {
     title: "Food Delivery Microservices Platform",
-    category: "Backend",
-    featured: false,
+    category: "Backend / Distributed Systems",
+    featured: true,
     summary:
-      "A production-style microservices backend for a food delivery domain, built and led by a team of 14 engineers under Agile practices, with multi-database architecture and full container orchestration.",
+      "A production-style distributed food delivery platform built using microservices architecture, Kubernetes orchestration, multi-database patterns, centralized observability, and scalable backend communication.",
     impact: [
-      "Served as Scrum Master leading a team of 14 software engineers across sprints and delivery cycles",
-      "Designed service boundaries for orders, payments, inventory, delivery tracking, and notifications",
-      "Multi-database architecture: PostgreSQL, MongoDB, Redis, Elasticsearch, Neo4j, and Cassandra — each chosen per service requirements",
-      "Kubernetes orchestration for service deployment, scaling, and health management",
-      "Redis caching for hot-path performance, Elasticsearch for search, Neo4j for graph-based recommendations",
+      "Kubernetes orchestration for service deployment, rolling updates, health management, and horizontal scaling",
+      "Centralized observability stack: Prometheus metrics collection, Grafana dashboards, and Loki for log aggregation across services",
+      "Polyglot persistence: PostgreSQL, MongoDB, Redis, Elasticsearch, Neo4j, and Cassandra — each selected per service requirements",
+      "Redis caching on hot paths for sub-millisecond response, Elasticsearch for full-text search, Neo4j for graph-based recommendations",
+      "Distributed service boundaries across orders, payments, inventory, delivery tracking, and notifications",
+      "Served as Scrum Master leading a team of 14 engineers across sprints and delivery cycles",
     ],
     stack: [
       "Spring Boot",
+      "Kubernetes",
+      "Prometheus",
+      "Grafana",
+      "Loki",
       "PostgreSQL",
       "MongoDB",
       "Redis",
@@ -282,7 +342,6 @@ const PROJECTS: {
       "Neo4j",
       "Cassandra",
       "Docker",
-      "Kubernetes",
       "REST APIs",
     ],
     link: "https://github.com/Tonyy131/17_Dockestra_FoodDelivery.git",
@@ -291,7 +350,7 @@ const PROJECTS: {
       type: "stats",
       items: [
         { label: "Team size", value: "14 engineers" },
-        { label: "Role", value: "Scrum Master" },
+        { label: "Observability", value: "Prometheus + Grafana" },
         { label: "Databases", value: "6 systems" },
         { label: "Orchestration", value: "Kubernetes" },
       ],
@@ -348,32 +407,115 @@ function CardShell({
   );
 }
 
+function ImageLightbox({
+  src,
+  alt,
+  onClose,
+}: {
+  src: string;
+  alt: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-2xl" />
+
+      <button
+        onClick={onClose}
+        aria-label="Close fullscreen view"
+        className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-all duration-200 hover:bg-white/20"
+      >
+        <X size={20} />
+      </button>
+
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 overflow-hidden rounded-2xl border border-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.7)]"
+        style={{
+          width: "min(90vw, 1200px)",
+          height: "min(82vh, 720px)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-contain"
+          sizes="(max-width: 1200px) 90vw, 1200px"
+          priority
+        />
+      </motion.div>
+
+      <div className="absolute bottom-5 left-0 right-0 z-10 flex justify-center">
+        <div className="rounded-xl border border-white/10 bg-black/60 px-4 py-2 text-xs text-white/50 backdrop-blur-md">
+          {alt} · Press Esc or click outside to close
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function ProjectRightPanel({
   panel,
   accent,
+  onImageClick,
 }: {
   panel: ProjectPanel;
   accent: string;
+  onImageClick?: (src: string, alt: string) => void;
 }) {
   if (panel.type === "image") {
     return (
       <div
-        className={`relative min-h-[340px] overflow-hidden border-t border-[var(--border)] bg-gradient-to-br ${accent} lg:border-l lg:border-t-0`}
+        className={`group relative min-h-[340px] cursor-zoom-in overflow-hidden border-t border-[var(--border)] bg-gradient-to-br ${accent} lg:border-l lg:border-t-0`}
+        onClick={() => onImageClick?.(panel.src, panel.alt)}
       >
         <Image
           src={panel.src}
           alt={panel.alt}
           fill
-          className="object-contain object-center"
+          className="object-contain object-center transition-transform duration-500 group-hover:scale-[1.04]"
           sizes="(max-width: 1024px) 100vw, 40vw"
         />
-        {/* Subtle fade at the edges to blend with the card border */}
         <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(8,12,20,0.6)]" />
-        {/* Caption pinned to bottom */}
+
+        {/* Expand overlay on hover */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/25">
+          <div className="flex scale-90 items-center gap-2 rounded-2xl border border-white/20 bg-black/50 px-4 py-2.5 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:scale-100 group-hover:opacity-100">
+            <Maximize2 size={16} className="text-white" />
+            <span className="text-xs font-medium text-white">
+              Expand diagram
+            </span>
+          </div>
+        </div>
+
         <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
           <div className="rounded-xl border border-[var(--border)] bg-[rgba(8,12,20,0.82)] p-3 backdrop-blur-md">
             <div className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text3)]">
-              Architecture diagram
+              Architecture diagram · click to expand
             </div>
             <div className="mt-0.5 text-xs text-[var(--text2)]">
               {panel.alt}
@@ -474,583 +616,626 @@ const fadeUp = {
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
 export default function Home() {
+  const [lightbox, setLightbox] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
+
+  const openLightbox = useCallback((src: string, alt: string) => {
+    setLightbox({ src, alt });
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setLightbox(null);
+  }, []);
+
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
-      {/* NAV */}
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-[var(--border)] bg-[rgba(8,12,20,0.82)] backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
-          <a
-            href="#home"
-            className="font-[var(--font-syne)] text-lg font-extrabold tracking-[-0.03em] text-[var(--text)]"
-          >
-            Antony Meckhael <span className="text-[var(--accent)]">.</span>
-          </a>
-          <div className="hidden items-center gap-7 md:flex">
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item}
-                href={`#${item}`}
-                className="text-sm text-[var(--text2)] transition-colors duration-200 hover:text-[var(--text)]"
-              >
-                {item.charAt(0).toUpperCase() + item.slice(1)}
-              </a>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
+    <>
+      <AnimatePresence>
+        {lightbox && (
+          <ImageLightbox
+            key="lightbox"
+            src={lightbox.src}
+            alt={lightbox.alt}
+            onClose={closeLightbox}
+          />
+        )}
+      </AnimatePresence>
+
+      <main className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+        {/* NAV */}
+        <nav className="fixed left-0 right-0 top-0 z-50 border-b border-[var(--border)] bg-[rgba(8,12,20,0.82)] backdrop-blur-2xl">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
             <a
-              href="https://github.com/Tonyy131"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden rounded-full border border-[var(--border2)] px-4 py-2 text-sm text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5 md:inline-flex"
+              href="#home"
+              className="font-[var(--font-syne)] text-lg font-extrabold tracking-[-0.03em] text-[var(--text)]"
             >
-              GitHub
+              Antony Meckhael <span className="text-[var(--accent)]">.</span>
             </a>
-            <a
-              href="mailto:tonyayman131@gmail.com"
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white shadow-[0_10px_30px_rgba(59,130,246,0.25)] transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              Contact <ArrowRight size={16} />
-            </a>
-          </div>
-        </div>
-      </nav>
-
-      {/* HERO */}
-      <section
-        id="home"
-        className="relative flex min-h-screen items-center px-5 pb-20 pt-28 md:px-8"
-      >
-        <div className="hero-grid-bg absolute inset-0 opacity-70" />
-        <div className="absolute left-1/2 top-[-180px] h-[560px] w-[760px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.16)_0%,transparent_70%)] blur-2xl" />
-
-        <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <motion.div initial="hidden" animate="show" variants={stagger}>
-            <motion.div
-              variants={fadeUp}
-              className="mb-6 inline-flex items-center gap-3 rounded-full border border-[rgba(59,130,246,0.18)] bg-[rgba(59,130,246,0.08)] px-4 py-2 text-xs font-medium text-[var(--accent)]"
-            >
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent)]" />
-              Open to Data Engineering, AI Engineering, and Backend roles
-            </motion.div>
-
-            {/* Heading: fixed size — no more giant wrapping text */}
-            <motion.h1
-              variants={fadeUp}
-              className="font-[var(--font-syne)] text-4xl font-extrabold tracking-[-0.04em] text-[var(--text)] md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]"
-            >
-              I build scalable backend systems, data platforms, and applied AI
-              products.
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp}
-              className="mt-6 max-w-xl text-base leading-8 text-[var(--text2)]"
-            >
-              I am{" "}
-              <strong className="font-semibold text-[var(--text)]">
-                Antony Meckhael
-              </strong>
-              , a Computer Engineering graduate based in Cairo with hands-on
-              experience across microservices, streaming data, and GenAI —
-              including a{" "}
-              <strong className="font-semibold text-[var(--text)]">
-                published paper at EDTconf 2025
-              </strong>
-              .
-            </motion.p>
-
-            <motion.div
-              variants={fadeUp}
-              className="mt-7 flex flex-wrap gap-2.5"
-            >
-              {[
-                "Backend Engineering",
-                "Data Engineering",
-                "AI / GenAI",
-                "Cloud / DevOps",
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-4 py-1.5 text-xs font-medium tracking-[0.06em] text-[var(--text2)]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#projects"
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-sm font-medium text-white shadow-[0_14px_34px_rgba(59,130,246,0.28)] transition-transform duration-200 hover:-translate-y-0.5"
-              >
-                View Projects <ArrowRight size={16} />
-              </a>
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
-              >
-                Contact Me <MessageSquare size={16} />
-              </a>
-              <a
-                href="https://github.com/Tonyy131"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
-              >
-                GitHub <Github size={16} />
-              </a>
-            </motion.div>
-          </motion.div>
-
-          {/* Hero stat card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <CardShell className="p-6 md:p-7">
-              <div className="mb-6 flex items-center gap-3 border-b border-[var(--border)] pb-5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[rgba(59,130,246,0.18)] bg-[rgba(59,130,246,0.08)] text-[var(--accent)]">
-                  <Sparkles size={22} />
-                </div>
-                <div>
-                  <div className="font-[var(--font-syne)] text-lg font-bold tracking-[-0.03em] text-[var(--text)]">
-                    Antony Meckhael
-                  </div>
-                  <div className="text-sm text-[var(--text2)]">
-                    Data Engineer · AI Engineer · Backend Builder
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {STATS.map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4"
-                  >
-                    <div className="font-[var(--font-syne)] text-3xl font-extrabold tracking-[-0.04em] text-[var(--text)]">
-                      {item.value}
-                    </div>
-                    <div className="mt-1 text-sm font-medium text-[var(--text2)]">
-                      {item.label}
-                    </div>
-                    <div className="mt-1 text-xs text-[var(--text3)]">
-                      {item.detail}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4">
-                <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-[var(--accent)]">
-                  <Languages size={14} /> Languages
-                </div>
-                <div className="space-y-3 text-sm text-[var(--text2)]">
-                  {[
-                    ["Arabic", "Fluent"],
-                    ["English", "Fluent"],
-                    ["German", "Basic"],
-                  ].map(([lang, level]) => (
-                    <div
-                      key={lang}
-                      className="flex items-center justify-between gap-4"
-                    >
-                      <span>{lang}</span>
-                      <span className="text-[var(--text)]">{level}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardShell>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* TRUST BAR */}
-      <section className="px-5 md:px-8">
-        <div className="mx-auto max-w-6xl border-y border-[var(--border)] py-6">
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {TRUST_POINTS.map((point) => (
-              <div
-                key={point}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--bg2)] px-4 py-3 text-sm text-[var(--text2)]"
-              >
-                {point}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ABOUT */}
-      <section id="about" className="px-5 py-24 md:px-8">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
-          <div>
-            <SectionLabel>About</SectionLabel>
-            <h2 className="max-w-2xl font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
-              A focused engineer with strength in systems, data, and AI.
-            </h2>
-            <div className="mt-6 space-y-5 text-[1.05rem] leading-8 text-[var(--text2)]">
-              <p>
-                I build software that has to work in the real world: backend
-                services, data pipelines, distributed workflows, and AI features
-                that are useful instead of decorative.
-              </p>
-              <p>
-                My most relevant work includes a real-time stock analytics
-                platform, an AI system based on Graph-RAG, a research thesis on
-                AAS-driven Docker execution, and several full-stack and mobile
-                integrations.
-              </p>
-              <p>
-                I prefer practical engineering, clear architecture, and code
-                that is maintainable, testable, and easy to explain to a team.
-              </p>
-            </div>
-          </div>
-          <CardShell className="p-6 md:p-7">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-5">
-                <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
-                  <GraduationCap size={14} /> Education
-                </div>
-                <div className="font-[var(--font-syne)] text-lg font-bold text-[var(--text)]">
-                  Computer Engineering
-                </div>
-                <div className="mt-1 text-sm text-[var(--text2)]">
-                  German University in Cairo
-                </div>
-                <div className="mt-3 text-sm leading-6 text-[var(--text3)]">
-                  Bachelor thesis completed with professors at Universität
-                  Stuttgart.
-                </div>
-              </div>
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-5">
-                <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
-                  <BriefcaseBusiness size={14} /> Focus
-                </div>
-                <div className="space-y-2 text-sm text-[var(--text2)]">
-                  <div>Data Engineering</div>
-                  <div>AI / GenAI Applications</div>
-                  <div>Backend & Microservices</div>
-                  <div>Cloud / Container Workflows</div>
-                </div>
-              </div>
-              <div className="sm:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-5">
-                <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
-                  <MapPin size={14} /> Location
-                </div>
-                <div className="text-sm leading-7 text-[var(--text2)]">
-                  Cairo, Egypt · open to remote work, relocation, and roles that
-                  value backend depth, data thinking, and applied AI.
-                </div>
-              </div>
-            </div>
-          </CardShell>
-        </div>
-      </section>
-
-      {/* EXPERIENCE */}
-      <section id="experience" className="bg-[var(--bg2)] px-5 py-24 md:px-8">
-        <div className="mx-auto max-w-6xl">
-          <SectionLabel>Experience</SectionLabel>
-          <h2 className="font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
-            Professional work and applied delivery.
-          </h2>
-          <div className="relative mt-12 pl-1">
-            <div className="absolute left-4 top-2 bottom-2 w-px bg-[var(--border)]" />
-            <div className="space-y-8">
-              {EXPERIENCE.map((item) => (
-                <CardShell
-                  key={`${item.company}-${item.role}`}
-                  className="relative p-6 md:p-7"
-                >
-                  <div className="absolute left-4 top-8 h-3 w-3 rounded-full border border-[var(--border2)] bg-[var(--bg)]" />
-                  <div className="pl-6">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-[var(--font-syne)] text-xl font-bold text-[var(--text)]">
-                          {item.role}
-                        </h3>
-                        <div className="mt-1 text-sm text-[var(--accent)]">
-                          {item.company} · {item.location}
-                        </div>
-                      </div>
-                      <div className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text3)]">
-                        {item.period}
-                      </div>
-                    </div>
-                    <ul className="mt-5 space-y-3 text-[0.96rem] leading-7 text-[var(--text2)]">
-                      {item.points.map((point) => (
-                        <li key={point} className="relative pl-5">
-                          <span className="absolute left-0 top-[0.9rem] h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardShell>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PROJECTS */}
-      <section id="projects" className="px-5 py-24 md:px-8">
-        <div className="mx-auto max-w-6xl">
-          <SectionLabel>Projects</SectionLabel>
-          <h2 className="max-w-3xl font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
-            Featured work with clear technical depth.
-          </h2>
-          <p className="mt-5 max-w-3xl text-[1.05rem] leading-8 text-[var(--text2)]">
-            Ordered by relevance to data engineering, applied AI, and backend
-            systems.
-          </p>
-          <div className="mt-12 grid gap-5">
-            {PROJECTS.map((project) => (
-              <motion.article
-                key={project.title}
-                whileHover={{ y: -3 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--bg2)] shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
-              >
-                <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
-                  <div className="p-6 md:p-8">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text3)]">
-                        {project.category}
-                      </span>
-                      {project.featured && (
-                        <span className="rounded-full border border-[rgba(59,130,246,0.22)] bg-[rgba(59,130,246,0.1)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
-                          Featured
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="mt-4 font-[var(--font-syne)] text-2xl font-bold tracking-[-0.03em] text-[var(--text)] md:text-[2rem]">
-                      {project.title}
-                    </h3>
-                    <p className="mt-4 max-w-2xl text-[0.98rem] leading-8 text-[var(--text2)]">
-                      {project.summary}
-                    </p>
-                    <div className="mt-6 grid gap-3">
-                      {project.impact.map((point) => (
-                        <div
-                          key={point}
-                          className="flex gap-3 rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4 text-sm leading-7 text-[var(--text2)]"
-                        >
-                          <span className="mt-[0.55rem] h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
-                          <span>{point}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {project.stack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs text-[var(--text2)]"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition-colors hover:text-white"
-                    >
-                      {project.panel.type === "publication"
-                        ? "Read paper"
-                        : "View repository"}
-                      <ExternalLink size={15} />
-                    </a>
-                  </div>
-                  <ProjectRightPanel
-                    panel={project.panel}
-                    accent={project.accent}
-                  />
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SKILLS */}
-      <section id="skills" className="bg-[var(--bg2)] px-5 py-24 md:px-8">
-        <div className="mx-auto max-w-6xl">
-          <SectionLabel>Skills</SectionLabel>
-          <h2 className="font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
-            The stack I use most often.
-          </h2>
-          <p className="mt-5 max-w-3xl text-[1.05rem] leading-8 text-[var(--text2)]">
-            Enough breadth to show range, enough depth to show focus.
-          </p>
-          <div className="mt-12 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
-            {SKILL_GROUPS.map((group) => {
-              const Icon = group.icon;
-              return (
-                <CardShell key={group.title} className="p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border2)] bg-[var(--bg3)] text-[var(--accent)]">
-                      <Icon size={18} />
-                    </div>
-                    <h3 className="font-[var(--font-syne)] text-lg font-bold text-[var(--text)]">
-                      {group.title}
-                    </h3>
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {group.items.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs text-[var(--text2)]"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </CardShell>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT */}
-      <section id="contact" className="px-5 py-24 md:px-8">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
-          <div>
-            <SectionLabel>Contact</SectionLabel>
-            <h2 className="font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
-              Let's build something useful.
-            </h2>
-            <p className="mt-5 max-w-2xl text-[1.05rem] leading-8 text-[var(--text2)]">
-              I am currently open to roles in Data Engineering, Backend
-              Engineering, and Applied AI. I am especially interested in teams
-              that value ownership, clarity, and strong technical execution.
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {[
-                {
-                  label: "Email",
-                  value: "tonyayman131@gmail.com",
-                  href: "mailto:tonyayman131@gmail.com",
-                },
-                {
-                  label: "GitHub",
-                  value: "github.com/Tonyy131",
-                  href: "https://github.com/Tonyy131",
-                },
-                {
-                  label: "LinkedIn",
-                  value: "linkedin.com/in/tonyayman131",
-                  href: "https://linkedin.com/in/tonyayman131",
-                },
-                { label: "Location", value: "Cairo, Egypt", href: "#home" },
-              ].map((item) => (
+            <div className="hidden items-center gap-7 md:flex">
+              {NAV_ITEMS.map((item) => (
                 <a
-                  key={item.label}
-                  href={item.href}
-                  target={item.href.startsWith("http") ? "_blank" : undefined}
-                  rel={item.href.startsWith("http") ? "noreferrer" : undefined}
-                  className="group rounded-2xl border border-[var(--border)] bg-[var(--bg2)] p-5 transition-all duration-200 hover:border-[var(--border2)] hover:bg-[var(--bg3)]"
+                  key={item}
+                  href={`#${item}`}
+                  className="text-sm text-[var(--text2)] transition-colors duration-200 hover:text-[var(--text)]"
                 >
-                  <div className="text-xs uppercase tracking-[0.2em] text-[var(--text3)]">
-                    {item.label}
-                  </div>
-                  <div className="mt-2 text-sm font-medium text-[var(--text)] group-hover:text-[var(--accent)]">
-                    {item.value}
-                  </div>
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
                 </a>
               ))}
             </div>
-          </div>
-          <CardShell className="p-6 md:p-7">
-            <div className="flex items-center gap-3 border-b border-[var(--border)] pb-5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[rgba(59,130,246,0.18)] bg-[rgba(59,130,246,0.08)] text-[var(--accent)]">
-                <Mail size={20} />
-              </div>
-              <div>
-                <div className="font-[var(--font-syne)] text-lg font-bold text-[var(--text)]">
-                  Contact details
-                </div>
-                <div className="text-sm text-[var(--text2)]">
-                  Open to full-time, internships, and research collaboration
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 space-y-4 text-sm leading-7 text-[var(--text2)]">
-              <p>
-                I am actively looking for roles where I can own meaningful
-                infrastructure — data pipelines, backend services, or AI systems
-                that solve real problems.
-              </p>
-              <p>
-                Cairo-based, open to remote or relocation. Response time under
-                24 hours.
-              </p>
-            </div>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <a
+                href="https://github.com/Tonyy131"
+                target="_blank"
+                rel="noreferrer"
+                className="hidden rounded-full border border-[var(--border2)] px-4 py-2 text-sm text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5 md:inline-flex"
+              >
+                GitHub
+              </a>
               <a
                 href="mailto:tonyayman131@gmail.com"
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white shadow-[0_10px_30px_rgba(59,130,246,0.25)] transition-transform duration-200 hover:-translate-y-0.5"
               >
-                Email Me <Mail size={16} />
+                Contact <ArrowRight size={16} />
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        {/* HERO */}
+        <section
+          id="home"
+          className="relative flex min-h-screen items-center px-5 pb-20 pt-28 md:px-8"
+        >
+          <div className="hero-grid-bg absolute inset-0 opacity-70" />
+          <div className="absolute left-1/2 top-[-180px] h-[560px] w-[760px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.16)_0%,transparent_70%)] blur-2xl" />
+
+          <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <motion.div initial="hidden" animate="show" variants={stagger}>
+              <motion.div
+                variants={fadeUp}
+                className="mb-6 inline-flex items-center gap-3 rounded-full border border-[rgba(59,130,246,0.18)] bg-[rgba(59,130,246,0.08)] px-4 py-2 text-xs font-medium text-[var(--accent)]"
+              >
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent)]" />
+                Open to Data Engineering, AI Engineering, and Backend roles
+              </motion.div>
+
+              <motion.h1
+                variants={fadeUp}
+                className="font-[var(--font-syne)] text-4xl font-extrabold tracking-[-0.04em] text-[var(--text)] md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]"
+              >
+                I engineer distributed systems, data platforms, and AI-native
+                applications.
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="mt-6 max-w-xl text-base leading-8 text-[var(--text2)]"
+              >
+                I am{" "}
+                <strong className="font-semibold text-[var(--text)]">
+                  Antony Meckhael
+                </strong>
+                , a Computer Engineering graduate specializing in distributed
+                backend systems, real-time data engineering, and GenAI — with a{" "}
+                <strong className="font-semibold text-[var(--text)]">
+                  published paper at EDTconf 2025
+                </strong>{" "}
+                and hands-on experience building LLM evaluation pipelines,
+                agentic workflows, and production microservices.
+              </motion.p>
+
+              <motion.div
+                variants={fadeUp}
+                className="mt-7 flex flex-wrap gap-2.5"
+              >
+                {[
+                  "Backend Engineering",
+                  "Data Engineering",
+                  "AI / GenAI",
+                  "LLMOps",
+                  "Cloud / DevOps",
+                ].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-4 py-1.5 text-xs font-medium tracking-[0.06em] text-[var(--text2)]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp}
+                className="mt-8 flex flex-wrap gap-3"
+              >
+                <a
+                  href="#projects"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-sm font-medium text-white shadow-[0_14px_34px_rgba(59,130,246,0.28)] transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  View Projects <ArrowRight size={16} />
+                </a>
+                <a
+                  href="/resume.pdf"
+                  download="Antony_Meckhael_Resume.pdf"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                >
+                  Resume <Download size={16} />
+                </a>
+                <a
+                  href="#contact"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                >
+                  Contact Me <MessageSquare size={16} />
+                </a>
+                <a
+                  href="https://github.com/Tonyy131"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-6 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                >
+                  GitHub <Github size={16} />
+                </a>
+              </motion.div>
+            </motion.div>
+
+            {/* Hero stat card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <CardShell className="p-6 md:p-7">
+                <div className="mb-6 flex items-center gap-3 border-b border-[var(--border)] pb-5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[rgba(59,130,246,0.18)] bg-[rgba(59,130,246,0.08)] text-[var(--accent)]">
+                    <Sparkles size={22} />
+                  </div>
+                  <div>
+                    <div className="font-[var(--font-syne)] text-lg font-bold tracking-[-0.03em] text-[var(--text)]">
+                      Antony Meckhael
+                    </div>
+                    <div className="text-sm text-[var(--text2)]">
+                      Data Engineer · AI Engineer · Backend Builder
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {STATS.map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4"
+                    >
+                      <div className="font-[var(--font-syne)] text-3xl font-extrabold tracking-[-0.04em] text-[var(--text)]">
+                        {item.value}
+                      </div>
+                      <div className="mt-1 text-sm font-medium text-[var(--text2)]">
+                        {item.label}
+                      </div>
+                      <div className="mt-1 text-xs text-[var(--text3)]">
+                        {item.detail}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4">
+                  <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-[var(--accent)]">
+                    <Languages size={14} /> Languages
+                  </div>
+                  <div className="space-y-3 text-sm text-[var(--text2)]">
+                    {[
+                      ["Arabic", "Fluent"],
+                      ["English", "Fluent"],
+                      ["German", "Basic"],
+                    ].map(([lang, level]) => (
+                      <div
+                        key={lang}
+                        className="flex items-center justify-between gap-4"
+                      >
+                        <span>{lang}</span>
+                        <span className="text-[var(--text)]">{level}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardShell>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* TRUST BAR */}
+        <section className="px-5 md:px-8">
+          <div className="mx-auto max-w-6xl border-y border-[var(--border)] py-6">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {TRUST_POINTS.map((point) => (
+                <div
+                  key={point}
+                  className="rounded-2xl border border-[var(--border)] bg-[var(--bg2)] px-4 py-3 text-sm text-[var(--text2)]"
+                >
+                  {point}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section id="about" className="px-5 py-24 md:px-8">
+          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+            <div>
+              <SectionLabel>About</SectionLabel>
+              <h2 className="max-w-2xl font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
+                A focused engineer with strength in systems, data, and AI.
+              </h2>
+              <div className="mt-6 space-y-5 text-[1.05rem] leading-8 text-[var(--text2)]">
+                <p>
+                  I build software that has to work in the real world: backend
+                  services, data pipelines, distributed workflows, and AI
+                  features that are useful instead of decorative.
+                </p>
+                <p>
+                  My most relevant work includes a real-time stock analytics
+                  platform, an AI system based on Graph-RAG, a GenAI evaluation
+                  platform with agentic workflows, a research thesis on
+                  AAS-driven Docker execution, and several full-stack and mobile
+                  integrations.
+                </p>
+                <p>
+                  I prefer practical engineering, clear architecture, and code
+                  that is maintainable, testable, and easy to explain to a team.
+                </p>
+              </div>
+            </div>
+            <CardShell className="p-6 md:p-7">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-5">
+                  <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
+                    <GraduationCap size={14} /> Education
+                  </div>
+                  <div className="font-[var(--font-syne)] text-lg font-bold text-[var(--text)]">
+                    Computer Engineering
+                  </div>
+                  <div className="mt-1 text-sm text-[var(--text2)]">
+                    German University in Cairo
+                  </div>
+                  <div className="mt-3 text-sm leading-6 text-[var(--text3)]">
+                    Bachelor thesis completed with professors at Universität
+                    Stuttgart.
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-5">
+                  <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
+                    <BriefcaseBusiness size={14} /> Focus
+                  </div>
+                  <div className="space-y-2 text-sm text-[var(--text2)]">
+                    <div>Data Engineering</div>
+                    <div>AI / GenAI · LLMOps</div>
+                    <div>Backend & Microservices</div>
+                    <div>Cloud / Container Workflows</div>
+                  </div>
+                </div>
+                <div className="sm:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-5">
+                  <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
+                    <MapPin size={14} /> Location
+                  </div>
+                  <div className="text-sm leading-7 text-[var(--text2)]">
+                    Cairo, Egypt · open to remote work, relocation, and roles
+                    that value backend depth, data thinking, and applied AI.
+                  </div>
+                </div>
+              </div>
+            </CardShell>
+          </div>
+        </section>
+
+        {/* EXPERIENCE */}
+        <section
+          id="experience"
+          className="bg-[var(--bg2)] px-5 py-24 md:px-8"
+        >
+          <div className="mx-auto max-w-6xl">
+            <SectionLabel>Experience</SectionLabel>
+            <h2 className="font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
+              Professional work and applied delivery.
+            </h2>
+            <div className="relative mt-12 pl-1">
+              <div className="absolute left-4 top-2 bottom-2 w-px bg-[var(--border)]" />
+              <div className="space-y-8">
+                {EXPERIENCE.map((item) => (
+                  <CardShell
+                    key={`${item.company}-${item.role}`}
+                    className="relative p-6 md:p-7"
+                  >
+                    <div className="absolute left-4 top-8 h-3 w-3 rounded-full border border-[var(--border2)] bg-[var(--bg)]" />
+                    <div className="pl-6">
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                          <h3 className="font-[var(--font-syne)] text-xl font-bold text-[var(--text)]">
+                            {item.role}
+                          </h3>
+                          <div className="mt-1 text-sm text-[var(--accent)]">
+                            {item.company} · {item.location}
+                          </div>
+                        </div>
+                        <div className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text3)]">
+                          {item.period}
+                        </div>
+                      </div>
+                      <ul className="mt-5 space-y-3 text-[0.96rem] leading-7 text-[var(--text2)]">
+                        {item.points.map((point) => (
+                          <li key={point} className="relative pl-5">
+                            <span className="absolute left-0 top-[0.9rem] h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                            {point}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardShell>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PROJECTS */}
+        <section id="projects" className="px-5 py-24 md:px-8">
+          <div className="mx-auto max-w-6xl">
+            <SectionLabel>Projects</SectionLabel>
+            <h2 className="max-w-3xl font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
+              Featured work with clear technical depth.
+            </h2>
+            <p className="mt-5 max-w-3xl text-[1.05rem] leading-8 text-[var(--text2)]">
+              Ordered by relevance to data engineering, applied AI, and backend
+              systems.
+            </p>
+            <div className="mt-12 grid gap-5">
+              {PROJECTS.map((project) => (
+                <motion.article
+                  key={project.title}
+                  whileHover={{ y: -3 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--bg2)] shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
+                >
+                  <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+                    <div className="p-6 md:p-8">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text3)]">
+                          {project.category}
+                        </span>
+                        {project.featured && (
+                          <span className="rounded-full border border-[rgba(59,130,246,0.22)] bg-[rgba(59,130,246,0.1)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="mt-4 font-[var(--font-syne)] text-2xl font-bold tracking-[-0.03em] text-[var(--text)] md:text-[2rem]">
+                        {project.title}
+                      </h3>
+                      <p className="mt-4 max-w-2xl text-[0.98rem] leading-8 text-[var(--text2)]">
+                        {project.summary}
+                      </p>
+                      <div className="mt-6 grid gap-3">
+                        {project.impact.map((point) => (
+                          <div
+                            key={point}
+                            className="flex gap-3 rounded-2xl border border-[var(--border)] bg-[var(--bg3)] p-4 text-sm leading-7 text-[var(--text2)]"
+                          >
+                            <span className="mt-[0.55rem] h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]" />
+                            <span>{point}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-6 flex flex-wrap gap-2">
+                        {project.stack.map((tech) => (
+                          <span
+                            key={tech}
+                            className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs text-[var(--text2)]"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition-colors hover:text-white"
+                      >
+                        {project.panel.type === "publication"
+                          ? "Read paper"
+                          : "View repository"}
+                        <ExternalLink size={15} />
+                      </a>
+                    </div>
+                    <ProjectRightPanel
+                      panel={project.panel}
+                      accent={project.accent}
+                      onImageClick={openLightbox}
+                    />
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* SKILLS */}
+        <section id="skills" className="bg-[var(--bg2)] px-5 py-24 md:px-8">
+          <div className="mx-auto max-w-6xl">
+            <SectionLabel>Skills</SectionLabel>
+            <h2 className="font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
+              The stack I use most often.
+            </h2>
+            <p className="mt-5 max-w-3xl text-[1.05rem] leading-8 text-[var(--text2)]">
+              Enough breadth to show range, enough depth to show focus.
+            </p>
+            <div className="mt-12 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
+              {SKILL_GROUPS.map((group) => {
+                const Icon = group.icon;
+                return (
+                  <CardShell key={group.title} className="p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border2)] bg-[var(--bg3)] text-[var(--accent)]">
+                        <Icon size={18} />
+                      </div>
+                      <h3 className="font-[var(--font-syne)] text-lg font-bold text-[var(--text)]">
+                        {group.title}
+                      </h3>
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {group.items.map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-[var(--border2)] bg-[var(--bg3)] px-3 py-1 text-xs text-[var(--text2)]"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </CardShell>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* CONTACT */}
+        <section id="contact" className="px-5 py-24 md:px-8">
+          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+            <div>
+              <SectionLabel>Contact</SectionLabel>
+              <h2 className="font-[var(--font-syne)] text-3xl font-bold tracking-[-0.04em] md:text-5xl">
+                Let&apos;s build something useful.
+              </h2>
+              <p className="mt-5 max-w-2xl text-[1.05rem] leading-8 text-[var(--text2)]">
+                I am currently open to roles in Data Engineering, Backend
+                Engineering, and Applied AI. I am especially interested in teams
+                that value ownership, clarity, and strong technical execution.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    label: "Email",
+                    value: "tonyayman131@gmail.com",
+                    href: "mailto:tonyayman131@gmail.com",
+                  },
+                  {
+                    label: "GitHub",
+                    value: "github.com/Tonyy131",
+                    href: "https://github.com/Tonyy131",
+                  },
+                  {
+                    label: "LinkedIn",
+                    value: "linkedin.com/in/tonyayman131",
+                    href: "https://linkedin.com/in/tonyayman131",
+                  },
+                  { label: "Location", value: "Cairo, Egypt", href: "#home" },
+                ].map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target={item.href.startsWith("http") ? "_blank" : undefined}
+                    rel={
+                      item.href.startsWith("http") ? "noreferrer" : undefined
+                    }
+                    className="group rounded-2xl border border-[var(--border)] bg-[var(--bg2)] p-5 transition-all duration-200 hover:border-[var(--border2)] hover:bg-[var(--bg3)]"
+                  >
+                    <div className="text-xs uppercase tracking-[0.2em] text-[var(--text3)]">
+                      {item.label}
+                    </div>
+                    <div className="mt-2 text-sm font-medium text-[var(--text)] group-hover:text-[var(--accent)]">
+                      {item.value}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+            <CardShell className="p-6 md:p-7">
+              <div className="flex items-center gap-3 border-b border-[var(--border)] pb-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[rgba(59,130,246,0.18)] bg-[rgba(59,130,246,0.08)] text-[var(--accent)]">
+                  <Mail size={20} />
+                </div>
+                <div>
+                  <div className="font-[var(--font-syne)] text-lg font-bold text-[var(--text)]">
+                    Contact details
+                  </div>
+                  <div className="text-sm text-[var(--text2)]">
+                    Open to full-time, internships, and research collaboration
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 space-y-4 text-sm leading-7 text-[var(--text2)]">
+                <p>
+                  I am actively looking for roles where I can own meaningful
+                  infrastructure — data pipelines, backend services, or AI
+                  systems that solve real problems.
+                </p>
+                <p>
+                  Cairo-based, open to remote or relocation. Response time under
+                  24 hours.
+                </p>
+              </div>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <a
+                  href="mailto:tonyayman131@gmail.com"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5"
+                >
+                  Email Me <Mail size={16} />
+                </a>
+                <a
+                  href="https://github.com/Tonyy131"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-5 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                >
+                  GitHub <Github size={16} />
+                </a>
+                <a
+                  href="https://linkedin.com/in/tonyayman131"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-5 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                >
+                  LinkedIn <ExternalLink size={16} />
+                </a>
+              </div>
+            </CardShell>
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="border-t border-[var(--border)] px-5 py-8 md:px-8">
+          <div className="mx-auto flex max-w-6xl flex-col gap-3 text-sm text-[var(--text3)] md:flex-row md:items-center md:justify-between">
+            <div>
+              © {new Date().getFullYear()} Antony Meckhael. Built for Data
+              Engineering, AI Engineering, and Backend opportunities.
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <a
+                href="mailto:tonyayman131@gmail.com"
+                className="transition-colors hover:text-[var(--text)]"
+              >
+                tonyayman131@gmail.com
               </a>
               <a
                 href="https://github.com/Tonyy131"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-5 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                className="transition-colors hover:text-[var(--text)]"
               >
-                GitHub <Github size={16} />
+                GitHub
               </a>
               <a
                 href="https://linkedin.com/in/tonyayman131"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border2)] px-5 py-3 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-white/30 hover:bg-white/5"
+                className="transition-colors hover:text-[var(--text)]"
               >
-                LinkedIn <ExternalLink size={16} />
+                LinkedIn
               </a>
             </div>
-          </CardShell>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-[var(--border)] px-5 py-8 md:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 text-sm text-[var(--text3)] md:flex-row md:items-center md:justify-between">
-          <div>
-            © {new Date().getFullYear()} Antony Meckhael. Built for Data
-            Engineering, AI Engineering, and Backend opportunities.
           </div>
-          <div className="flex flex-wrap gap-4">
-            <a
-              href="mailto:tonyayman131@gmail.com"
-              className="transition-colors hover:text-[var(--text)]"
-            >
-              tonyayman131@gmail.com
-            </a>
-            <a
-              href="https://github.com/Tonyy131"
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-[var(--text)]"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://linkedin.com/in/tonyayman131"
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-[var(--text)]"
-            >
-              LinkedIn
-            </a>
-          </div>
-        </div>
-      </footer>
-    </main>
+        </footer>
+      </main>
+    </>
   );
 }
