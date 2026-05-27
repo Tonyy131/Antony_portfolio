@@ -271,8 +271,10 @@ const PROJECTS: {
       "Evaluation Pipelines",
       "Workflow Orchestration",
       "Graph-based Systems",
+      "Graph RAG",
+      "Vector RAG"
     ],
-    link: "https://github.com/Tonyy131",
+    link: "https://github.com/mohamed-abdulbaki22/ChatGUC.git",
     accent: "from-purple-500/20 to-pink-500/20",
     panel: {
       type: "stats",
